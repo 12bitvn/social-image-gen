@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const matter = require('gray-matter')
 const mustache = require('mustache')
 const fs = require('fs')
@@ -6,13 +8,14 @@ const puppeteer = require('puppeteer')
 const fileUrl = require('file-url')
 const formatDate = require('date-fns/format')
 
-require('dotenv').config()
-
-let markdownPath = process.env.MARKDOWN_PATH
-if (!markdownPath) {
-  throw new Error('Please provide `process.env.MARKDOWN_PATH')
+const args = require('minimist')(process.argv.slice(2))
+console.log(args)
+let outputPath = args['output']
+if (!outputPath) {
+  throw new Error('Missing the output path of images.')
 }
-let templatePath = process.env.TEMPLATE_PATH
+
+let templatePath = args['template']
 if (!templatePath) {
   templatePath = 'templates/default.html'
 }
@@ -37,10 +40,15 @@ const getPreviewHTML = data => {
     let output = mustache.render(html, formatPreviewData(data))
     return output
   } catch (error) {
-    throw new Error('Cannot get the HTML of preview.')
+    throw new Error('Cannot get the preview HTML.')
   }
 }
 
+/**
+ * Format the output data
+ *
+ * @param {Object} data
+ */
 const formatPreviewData = data => {
   let formatedData = data
   formatedData.title = data.title || 'untitled'
@@ -57,20 +65,24 @@ const formatPreviewData = data => {
  * @param {String} url
  */
 const generateImageFromHTML = async (dir, url) => {
-  const browser = await puppeteer.launch()
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  })
   const page = await browser.newPage()
 
-  let imageWidth = process.env.IMAGE_WIDTH
+  let imageWidth = args['width']
   if (!imageWidth) {
-    imageWidth = 400
+    imageWidth = 800
   }
-  let imageHeight = process.env.IMAGE_HEIGHT
+  let imageHeight = args['height']
   if (!imageHeight) {
-    imageHeight = 800
+    imageHeight = 400
   }
 
   imageWidth = parseInt(imageWidth)
   imageHeight = parseInt(imageHeight)
+
   page.setViewport({
     width: imageWidth,
     height: imageHeight
@@ -95,11 +107,10 @@ const generateImageFromHTML = async (dir, url) => {
  * if the `file` isn't markdown format, maybe it's a directory. We will try to recursive lookup through that directory to find the markdown.
  *
  * @param {String} parentDir
- * @param {String} file
+ * @param {Object} data
  */
-const generateImage = (parentDir, file) => {
-  let content = getDataFromMarkdown(parentDir + '/' + file)
-  let output = getPreviewHTML(content.data)
+const generateImage = (parentDir, data) => {
+  let output = getPreviewHTML(data)
 
   // Create the preview.html based on the data from markdown file.
   let previewHTMLPath = parentDir + '/preview.html'
@@ -107,7 +118,7 @@ const generateImage = (parentDir, file) => {
     if (err) throw err
     generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
       .then(resp => {
-        //fs.unlinkSync(previewHTMLPath)
+        fs.unlinkSync(previewHTMLPath)
         console.log(`Created: ${parentDir}/preview.png`)
       })
       .catch(err => {
@@ -116,18 +127,34 @@ const generateImage = (parentDir, file) => {
   })
 }
 
-const findMarkdown = markdownDir => {
+const findMarkdown = () => {
+  let markdownDir = args['path']
+  if (!markdownDir) {
+    throw new Error('Missing the path of markdown content.')
+  }
+
   markdownDir = path.resolve(markdownDir)
   fs.readdir(markdownDir, (err, files) => {
     if (!files) return
     files.forEach(file => {
       if (/\.md$/.test(file)) {
-        generateImage(markdownDir, file)
+        let content = getDataFromMarkdown(markdownDir + '/' + file)
+        generateImage(markdownDir, content.data)
       } else {
         findMarkdown(markdownDir + '/' + file)
       }
     })
   })
+  return;
 }
 
-findMarkdown(markdownPath)
+if (args['ignore-md']) {
+  generateImage(args['output'], {
+    title: args['title'],
+    date: args['date'],
+    author: args['author']
+  })
+} else {
+  findMarkdown()
+}
+

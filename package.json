@@ -2,8 +2,10 @@
   "name": "social-image-gen",
   "version": "1.0.0",
   "description": "Generate social image from markown.",
+  "repository": "12bit.vn/social-image-gen",
   "main": "src/index.js",
   "bin": "src/index.js",
+  "preferGlobal": true,
   "scripts": {
     "pretty": "yarn prettier --write src/**/*.js"
   },
@@ -15,6 +17,7 @@
     "dotenv": "^7.0.0",
     "file-url": "^2.0.2",
     "gray-matter": "^4.0.2",
+    "minimist": "^1.2.0",
     "mustache": "^3.0.1",
     "puppeteer": "^1.13.0"
   },
