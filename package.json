@@ -1,0 +1,24 @@
+{
+  "name": "social-image-gen",
+  "version": "1.0.0",
+  "description": "Generate social image from markown.",
+  "main": "src/index.js",
+  "bin": "src/index.js",
+  "scripts": {
+    "pretty": "yarn prettier --write src/**/*.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^1.30.1",
+    "dotenv": "^7.0.0",
+    "file-url": "^2.0.2",
+    "gray-matter": "^4.0.2",
+    "mustache": "^3.0.1",
+    "puppeteer": "^1.13.0"
+  },
+  "devDependencies": {
+    "prettier": "1.16.4"
+  }
+}
