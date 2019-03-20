@@ -21,8 +21,10 @@ Available arguments:
 | `--path` |**required**| |The path to the markdown file. It's MUST HAVE if there is no `--ignore-md` provided. Eg: `./posts/post-slug/index.md` |
 | `--output` |**required**| |The path that stores the generated image. Eg: `./public/post-slug`   | 
 | `--ignore-md` |optional| |In case that you don't want to generate image from markdown content, you can use this argument which goes together with `--title`, `--author`, `--date` |
-|`--width`|optional|800|The image width|
-|`--height`|optional|400| The image height|
+|`--width`|optional|800|The image width.|
+|`--height`|optional|400| The image height.|
+|`--name`|optional|"thumbnail"|The name of image.|
+|`--type`|optional|`png`|The type of image. It's must be 'png' or 'jpeg'|
 |`--title`|optional|"untitled"| The title in the image. If you use `--ignore-md`, this arg will available. Eg: `--title="Hello World"`|
 |`--date`|optional|| The date in the image. If you use `--ignore-md`, this arg will available. Eg: `--date="20 Mar 2019"`|
 |`--author`|optional|"unauthored"| The author in the image. If you use `--ignore-md`, this arg will available. Eg: `--author="12bit.vn"`|
