@@ -89,7 +89,7 @@ const generateImageFromHTML = async (dir, url) => {
     height: imageHeight
   })
 
-  await page.goto(url)
+  await page.goto(url, { waitUntil: 'networkidle0' })
   let result = await page.screenshot({
     path: path.resolve(`${dir}/preview.png`),
     type: 'png',
