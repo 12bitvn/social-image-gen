@@ -9,15 +9,15 @@ const fileUrl = require('file-url')
 const formatDate = require('date-fns/format')
 
 const args = require('minimist')(process.argv.slice(2))
-console.log(args)
+
 let outputPath = args['output']
 if (!outputPath) {
   throw new Error('Missing the output path of images.')
 }
 
-let templatePath = args['template']
-if (!templatePath) {
-  templatePath = 'templates/default.html'
+let templatePath = path.resolve(__dirname, '../templates/default.html')
+if (args['template']) {
+  templatePath =  path.resolve(args['template'])
 }
 
 /**
@@ -40,7 +40,7 @@ const getPreviewHTML = data => {
     let output = mustache.render(html, formatPreviewData(data))
     return output
   } catch (error) {
-    throw new Error('Cannot get the preview HTML.')
+    throw error
   }
 }
 
@@ -52,8 +52,9 @@ const getPreviewHTML = data => {
 const formatPreviewData = data => {
   let formatedData = data
   formatedData.title = data.title || 'untitled'
+  formatedData.date = data.date && !args['ignore-md'] ? formatDate(data.date, 'DD-MM-YYYY') : data.date
   formatedData.font_size_title = 15 - (((formatedData.title.length ** 0.89) + 85) / 16)
-  formatedData.date = data.date ? formatDate(data.date, 'DD-MM-YYYY') : 'DD/MM/YYYY'
+  formatedData.author = data.author || 'unauthored'
   return formatedData
 }
 
@@ -83,13 +84,13 @@ const generateImageFromHTML = async (dir, url) => {
   imageWidth = parseInt(imageWidth)
   imageHeight = parseInt(imageHeight)
 
-  page.setViewport({
+  await page.setViewport({
     width: imageWidth,
     height: imageHeight
   })
 
   await page.goto(url)
-  return page.screenshot({
+  let result = await page.screenshot({
     path: path.resolve(`${dir}/preview.png`),
     type: 'png',
     clip: {
@@ -99,6 +100,10 @@ const generateImageFromHTML = async (dir, url) => {
       height: imageHeight
     }
   })
+
+  await browser.close()
+
+  return result
 }
 
 /**
@@ -116,14 +121,14 @@ const generateImage = (parentDir, data) => {
   let previewHTMLPath = parentDir + '/preview.html'
   fs.writeFile(previewHTMLPath, output, 'utf8', err => {
     if (err) throw err
-    generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
-      .then(resp => {
-        fs.unlinkSync(previewHTMLPath)
-        console.log(`Created: ${parentDir}/preview.png`)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    let result = generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
+    result.then(resp => {
+      fs.unlinkSync(previewHTMLPath)
+      console.log(`Created: ${parentDir}/preview.png`)
+    }).catch(error => {
+      console.log(`Error: ${previewHTMLPath}`)
+      console.log(error)
+    })
   })
 }
 
@@ -157,4 +162,3 @@ if (args['ignore-md']) {
 } else {
   findMarkdown()
 }
-
