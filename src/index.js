@@ -17,7 +17,7 @@ if (!outputPath) {
 
 let templatePath = path.resolve(__dirname, '../templates/default.html')
 if (args['template']) {
-  templatePath =  path.resolve(args['template'])
+  templatePath = path.resolve(args['template'])
 }
 
 let imagegType = args['type'] || 'png'
@@ -60,8 +60,12 @@ const getPreviewHTML = data => {
 const formatPreviewData = data => {
   let formatedData = data
   formatedData.title = data.title || 'untitled'
-  formatedData.date = data.date && !args['ignore-md'] ? formatDate(data.date, 'DD-MM-YYYY') : data.date
-  formatedData.font_size_title = 15 - (((formatedData.title.length ** 0.89) + 85) / 16)
+  formatedData.date =
+    data.date && !args['ignore-md']
+      ? formatDate(data.date, 'DD-MM-YYYY')
+      : data.date
+  formatedData.font_size_title =
+    15 - (formatedData.title.length ** 0.89 + 85) / 16
   formatedData.author = data.author || 'unauthored'
   return formatedData
 }
@@ -94,7 +98,7 @@ const generateImageFromHTML = async (dir, url) => {
 
   await page.setViewport({
     width: imageWidth,
-    height: imageHeight
+    height: imageHeight,
   })
 
   await page.goto(url, { waitUntil: 'networkidle0' })
@@ -105,8 +109,8 @@ const generateImageFromHTML = async (dir, url) => {
       x: 0,
       y: 0,
       width: imageWidth,
-      height: imageHeight
-    }
+      height: imageHeight,
+    },
   })
 
   await browser.close()
@@ -130,22 +134,24 @@ const generateImage = (parentDir, data) => {
   fs.writeFile(previewHTMLPath, output, 'utf8', err => {
     if (err) throw err
     let result = generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
-    result.then(resp => {
-      fs.unlinkSync(previewHTMLPath)
-      console.log(`Created: ${parentDir}/${imageName}`)
-    }).catch(error => {
-      console.log(`Error: ${previewHTMLPath}`)
-      console.log(error)
-    })
+    result
+      .then(resp => {
+        fs.unlinkSync(previewHTMLPath)
+        console.log(`Created: ${parentDir}/${imageName}`)
+      })
+      .catch(error => {
+        console.log(`Error: ${previewHTMLPath}`)
+        console.log(error)
+      })
   })
 }
 
-
+// Proceed the generation
 if (args['ignore-md']) {
   generateImage(args['output'], {
     title: args['title'],
     date: args['date'],
-    author: args['author']
+    author: args['author'],
   })
 } else {
   if (!args['path']) {
@@ -160,5 +166,4 @@ if (args['ignore-md']) {
     let err = `'${markdownPath}' it not a markdown.`
     throw new Error(err)
   }
-  return;
 }
