@@ -20,6 +20,14 @@ if (args['template']) {
   templatePath =  path.resolve(args['template'])
 }
 
+let imagegType = args['type'] || 'png'
+if (!['png', 'jpeg'].includes(imagegType)) {
+  throw new Error('Image type must be `png` or `jpeg`')
+}
+
+let imageName = args['name'] || 'thumbnail'
+imageName += '.' + imagegType
+
 /**
  * Get content from markdonw file
  *
@@ -91,8 +99,8 @@ const generateImageFromHTML = async (dir, url) => {
 
   await page.goto(url, { waitUntil: 'networkidle0' })
   let result = await page.screenshot({
-    path: path.resolve(`${dir}/preview.png`),
-    type: 'png',
+    path: path.resolve(`${dir}/${imageName}`),
+    type: imagegType,
     clip: {
       x: 0,
       y: 0,
@@ -124,7 +132,7 @@ const generateImage = (parentDir, data) => {
     let result = generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
     result.then(resp => {
       fs.unlinkSync(previewHTMLPath)
-      console.log(`Created: ${parentDir}/preview.png`)
+      console.log(`Created: ${parentDir}/${imageName}`)
     }).catch(error => {
       console.log(`Error: ${previewHTMLPath}`)
       console.log(error)
@@ -132,26 +140,6 @@ const generateImage = (parentDir, data) => {
   })
 }
 
-const findMarkdown = () => {
-  let markdownDir = args['path']
-  if (!markdownDir) {
-    throw new Error('Missing the path of markdown content.')
-  }
-
-  markdownDir = path.resolve(markdownDir)
-  fs.readdir(markdownDir, (err, files) => {
-    if (!files) return
-    files.forEach(file => {
-      if (/\.md$/.test(file)) {
-        let content = getDataFromMarkdown(markdownDir + '/' + file)
-        generateImage(markdownDir, content.data)
-      } else {
-        findMarkdown(markdownDir + '/' + file)
-      }
-    })
-  })
-  return;
-}
 
 if (args['ignore-md']) {
   generateImage(args['output'], {
@@ -160,5 +148,17 @@ if (args['ignore-md']) {
     author: args['author']
   })
 } else {
-  findMarkdown()
+  if (!args['path']) {
+    throw new Error('Missing the path of markdown content.')
+  }
+
+  markdownPath = path.resolve(args['path'])
+  if (/\.md$/.test(markdownPath)) {
+    let content = getDataFromMarkdown(markdownPath)
+    generateImage(args['output'], content.data)
+  } else {
+    let err = `'${markdownPath}' it not a markdown.`
+    throw new Error(err)
+  }
+  return;
 }
