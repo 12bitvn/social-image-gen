@@ -50,7 +50,8 @@ date: "2019-03-04T10:33:00+07:00"
 social-image-gen --path=./posts/hello-world/index.md --output=./public/hello-world/ --width=1200 --height=630
 ```
 
-![social-image-gen-1](https://user-images.githubusercontent.com/3280351/54657368-c42c6000-4afb-11e9-9df7-2d7403ab30d6.png)
+![thumbnail](https://user-images.githubusercontent.com/3280351/54678731-55b9c300-4b38-11e9-9311-3ae3ed0a0676.png)
+
 
 2. Generate a 800x400px social image with `--ignore-md`
 
@@ -58,4 +59,4 @@ social-image-gen --path=./posts/hello-world/index.md --output=./public/hello-wor
 social-image-gen --ignore-md --output=./public/hello-world/ --title="Hello World" --date="20 Mar, 2019" --author="12bit.vn"
 ```
 
-![social-image-gen-2](https://user-images.githubusercontent.com/3280351/54657366-c393c980-4afb-11e9-83d4-9ea5b12dcee1.png)
+![thumbnail-1](https://user-images.githubusercontent.com/3280351/54678733-56525980-4b38-11e9-9f07-5d874ee3a2a6.png)
