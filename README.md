@@ -1,5 +1,7 @@
 # social-image-gen
 
+We got inspired by the social image from [dev.to](https://dev.to) so we decided to create the own one for our blog [12bit.vn](https://12bit.vn). However, you can use it to generate images for your site as well.
+
 ## Installation
 
 ```
@@ -14,7 +16,7 @@ yarn global add social-image-gen
 social-image-gen [args]
 ```
 
-Available arguments:
+### Available arguments
 
 | Argument | Required  | Default|Description|
 |----------|----------|-----|------|
@@ -30,7 +32,7 @@ Available arguments:
 |`--author`|optional|"unauthored"| The author in the image. If you use `--ignore-md`, this arg will available. Eg: `--author="12bit.vn"`|
 |`--template`|optional|`templates/default.html`|The mockup template is used to generate image. You can check `./templates/default.html` to see how to create a template.|
 
-Examples:
+### Examples
 
 1. Generate a 1200x630px social image from `posts/hello-world/index.md`
 
