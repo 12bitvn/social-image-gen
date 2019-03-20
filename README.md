@@ -16,13 +16,28 @@ social-image-gen [args]
 
 Available arguments:
 
-| Argument    |Desciption|            |
-|----------|----------|------|
-| `--path` | The path to the markdown file. It's MUST HAVE if there is no `--ignore-md` provided. Eg: `./posts/post-slug/index.md` | `optional` |
-| `--output` | The path that stores the generated image. Eg: `./public/post-slug`   |   `required` |
-| `--ignore-md` | In case that you don't want to generate image from markdown content, you can use this argument which goes together with `--title`, `--author`, `--date` | `optional` |
-|`--width`| The image width| `optinal` - default is `800`|
-|`--height`| The image height| `optinal` - default is `400`|
-|`--title`| The title in the image. If you use `--ignore-md`, this arg will available. Eg: `--title="Hello World"`| `optional` - default is `untitled`|
-|`--date`| The date in the image. If you use `--ignore-md`, this arg will available. Eg: `--date="20 Mar 2019"`| `optional`|
-|`--author`| The author in the image. If you use `--ignore-md`, this arg will available. Eg: `--author="12bit.vn"`| `optional` - default is `unauthored`|
+| Argument | Required  | Default|Description|
+|----------|----------|-----|------|
+| `--path` |**required**| |The path to the markdown file. It's MUST HAVE if there is no `--ignore-md` provided. Eg: `./posts/post-slug/index.md` |
+| `--output` |**required**| |The path that stores the generated image. Eg: `./public/post-slug`   | 
+| `--ignore-md` |optional| |In case that you don't want to generate image from markdown content, you can use this argument which goes together with `--title`, `--author`, `--date` |
+|`--width`|optional|800|The image width|
+|`--height`|optional|400| The image height|
+|`--title`|optional|"untitled"| The title in the image. If you use `--ignore-md`, this arg will available. Eg: `--title="Hello World"`|
+|`--date`|optional|| The date in the image. If you use `--ignore-md`, this arg will available. Eg: `--date="20 Mar 2019"`|
+|`--author`|optional|"unauthored"| The author in the image. If you use `--ignore-md`, this arg will available. Eg: `--author="12bit.vn"`|
+|`--template`|optional|`templates/default.html`|The mockup template is used to generate image. You can check `./templates/default.html` to see how to create a template.|
+
+Examples:
+
+1. Generate a 1200x630px social image from `posts/hello-world/index.md`
+
+```
+social-image-gen --path=./posts/hello-world/index.md --output=./public/hello-world/ --width=1200 --height=630
+```
+
+2. Generate a 800x400px social image with `--ignore-md`
+
+```
+social-image-gen --ignore-md --output=./public/hello-world/ --title="Hello World" --date="20 Mar, 2019" --author="12bit.vn"
+```
