@@ -74,10 +74,10 @@ const formatPreviewData = data => {
  * Using puppeteer to take a screenshot via the url in local
  * `url` takes the format like `file://`
  *
- * @param {String} dir
+ * @param {String} outputPath
  * @param {String} url
  */
-const generateImageFromHTML = async (dir, url) => {
+const generateImageFromHTML = async (outputPath, url) => {
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -103,7 +103,7 @@ const generateImageFromHTML = async (dir, url) => {
 
   await page.goto(url, { waitUntil: 'networkidle0' })
   let result = await page.screenshot({
-    path: path.resolve(`${dir}/${imageName}`),
+    path: path.resolve(`${outputPath}/${imageName}`),
     type: imagegType,
     clip: {
       x: 0,
