@@ -1,6 +1,6 @@
 {
   "name": "social-image-gen",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "The tool that generates your social image based on your markdown content.",
   "repository": "12bitvn/social-image-gen",
   "main": "src/index.js",
