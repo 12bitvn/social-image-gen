@@ -7,9 +7,16 @@
   "bin": "src/index.js",
   "preferGlobal": true,
   "scripts": {
-    "pretty": "yarn prettier --write src/**/*.js"
+    "lint": "eslint .",
+    "pretty": "prettier --write src/**/*.js"
   },
-  "keywords": ["cli", "puppeteer", "social", "generate", "auto"],
+  "keywords": [
+    "cli",
+    "puppeteer",
+    "social",
+    "generate",
+    "auto"
+  ],
   "author": "12bit.vn",
   "license": "ISC",
   "dependencies": {
@@ -21,6 +28,8 @@
     "puppeteer": "^1.13.0"
   },
   "devDependencies": {
+    "eslint": "^5.15.3",
+    "eslint-plugin-prettier": "^3.0.1",
     "prettier": "1.16.4"
   }
 }
