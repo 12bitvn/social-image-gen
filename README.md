@@ -1,5 +1,7 @@
 # social-image-gen
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/12bitvn/social-image-gen.svg)](https://greenkeeper.io/)
+
 We got inspired by the social image from [dev.to](https://dev.to) so we decided to create the own one for our blog [12bit.vn](https://12bit.vn). However, you can use it to generate images for your site as well.
 
 ![npm](https://img.shields.io/npm/v/social-image-gen.svg)
