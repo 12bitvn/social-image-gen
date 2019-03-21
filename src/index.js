@@ -20,13 +20,13 @@ if (args['template']) {
   templatePath = path.resolve(args['template'])
 }
 
-let imagegType = args['type'] || 'png'
-if (!['png', 'jpeg'].includes(imagegType)) {
+let imageType = args['type'] || 'png'
+if (!['png', 'jpeg'].includes(imageType)) {
   throw new Error('Image type must be `png` or `jpeg`')
 }
 
 let imageName = args['name'] || 'thumbnail'
-imageName += '.' + imagegType
+imageName += '.' + imageType
 
 /**
  * Get content from markdonw file
@@ -65,7 +65,7 @@ const formatPreviewData = data => {
       ? formatDate(data.date, 'DD-MM-YYYY')
       : data.date
   formatedData.font_size_title =
-    15 - (formatedData.title.length ** 0.89 + 85) / 16
+    15 - (Math.pow(formatedData.title.length, 0.89) + 85) / 16
   formatedData.author = data.author || 'unauthored'
   return formatedData
 }
@@ -79,43 +79,46 @@ const formatPreviewData = data => {
  */
 const generateImageFromHTML = async (outputPath, url) => {
   const browser = await puppeteer.launch({
-    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   })
-  const page = await browser.newPage()
 
-  let imageWidth = args['width']
-  if (!imageWidth) {
-    imageWidth = 800
-  }
-  let imageHeight = args['height']
-  if (!imageHeight) {
-    imageHeight = 400
-  }
+  try {
+    const page = await browser.newPage()
 
-  imageWidth = parseInt(imageWidth)
-  imageHeight = parseInt(imageHeight)
+    let imageWidth = args['width']
+    if (!imageWidth) {
+      imageWidth = 800
+    }
+    let imageHeight = args['height']
+    if (!imageHeight) {
+      imageHeight = 400
+    }
 
-  await page.setViewport({
-    width: imageWidth,
-    height: imageHeight,
-  })
+    imageWidth = parseInt(imageWidth)
+    imageHeight = parseInt(imageHeight)
 
-  await page.goto(url, { waitUntil: 'networkidle0' })
-  let result = await page.screenshot({
-    path: path.resolve(`${outputPath}/${imageName}`),
-    type: imagegType,
-    clip: {
-      x: 0,
-      y: 0,
+    await page.setViewport({
       width: imageWidth,
       height: imageHeight,
-    },
-  })
+    })
 
-  await browser.close()
+    await page.goto(url, { waitUntil: 'networkidle0' })
+    await page.screenshot({
+      path: path.resolve(`${outputPath}/${imageName}`),
+      type: imageType,
+      clip: {
+        x: 0,
+        y: 0,
+        width: imageWidth,
+        height: imageHeight,
+      },
+    })
 
-  return result
+    await browser.close()
+  } catch (err) {
+    await browser.close()
+    throw err
+  }
 }
 
 /**
@@ -133,15 +136,15 @@ const generateImage = (parentDir, data) => {
   let previewHTMLPath = parentDir + '/preview.html'
   fs.writeFile(previewHTMLPath, output, 'utf8', err => {
     if (err) throw err
-    let result = generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
-    result
+    generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
       .then(resp => {
-        fs.unlinkSync(previewHTMLPath)
+        fs.unlink(previewHTMLPath, err => {
+          if (err) throw err
+        })
         console.log(`Created: ${parentDir}/${imageName}`)
       })
-      .catch(error => {
-        console.log(`Error: ${previewHTMLPath}`)
-        console.log(error)
+      .catch(err => {
+        console.log(err)
       })
   })
 }
