@@ -51,10 +51,9 @@ const getPreviewHTML = data => {
 const formatPreviewData = data => {
   let formatedData = data
   formatedData.title = data.title || 'untitled'
-  formatedData.date =
-    data.date && !args['ignore-md']
-      ? formatDate(data.date, 'DD-MM-YYYY')
-      : data.date
+  formatedData.date = !args['date']
+    ? formatDate(data.date, 'DD-MM-YYYY')
+    : args['date']
   formatedData.font_size_title =
     15 - (Math.pow(formatedData.title.length, 0.89) + 85) / 16
   formatedData.author = data.author || 'unauthored'
