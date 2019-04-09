@@ -7,26 +7,17 @@ const path = require('path')
 const puppeteer = require('puppeteer')
 const fileUrl = require('file-url')
 const formatDate = require('date-fns/format')
+const utils = require('./utils')
 
 const args = require('minimist')(process.argv.slice(2))
 
-let outputPath = args['output']
-if (!outputPath) {
-  throw new Error('Missing the output path of images.')
-}
+let outputPath = utils.getOutputPath()
 
-let templatePath = path.resolve(__dirname, '../templates/default.html')
-if (args['template']) {
-  templatePath = path.resolve(args['template'])
-}
+let templatePath = utils.getTemplatePath()
 
-let imageType = args['type'] || 'png'
-if (!['png', 'jpeg'].includes(imageType)) {
-  throw new Error('Image type must be `png` or `jpeg`')
-}
+let imageType = utils.getImageType()
 
-let imageName = args['name'] || 'thumbnail'
-imageName += '.' + imageType
+let imageName = utils.getImageName(imageType)
 
 /**
  * Get content from markdonw file
@@ -139,9 +130,9 @@ const generateImage = (parentDir, data) => {
     generateImageFromHTML(parentDir, fileUrl(previewHTMLPath))
       .then(resp => {
         fs.unlink(previewHTMLPath, err => {
-          if (err) throw err
+          if (err) console.log(err)
         })
-        console.log(`Created: ${parentDir}/${imageName}`)
+        console.log(`created: ${parentDir}/${imageName}`)
       })
       .catch(err => {
         console.log(err)
@@ -150,23 +141,19 @@ const generateImage = (parentDir, data) => {
 }
 
 // Proceed the generation
-if (args['ignore-md']) {
-  generateImage(args['output'], {
+if (!args['path']) {
+  generateImage(outputPath, {
     title: args['title'],
     date: args['date'],
     author: args['author'],
   })
 } else {
-  if (!args['path']) {
-    throw new Error('Missing the path of markdown content.')
-  }
-
   markdownPath = path.resolve(args['path'])
   if (/\.md$/.test(markdownPath)) {
     let content = getDataFromMarkdown(markdownPath)
-    generateImage(args['output'], content.data)
+    generateImage(outputPath, content.data)
   } else {
-    let err = `'${markdownPath}' it not a markdown.`
+    let err = `[error] '${markdownPath}' it not a markdown.`
     throw new Error(err)
   }
 }
