@@ -55,7 +55,7 @@ social-image-gen --path=./posts/hello-world/index.md --output=./public/hello-wor
 ![thumbnail](https://user-images.githubusercontent.com/3280351/54678731-55b9c300-4b38-11e9-9311-3ae3ed0a0676.png)
 
 
-2. Generate a 800x400px social image with `--ignore-md`
+2. Generate a 800x400px social image without markdown file.
 
 ```
 social-image-gen --output=./public/hello-world/ --title="Hello World" --date="20 Mar, 2019" --author="12bit.vn"
